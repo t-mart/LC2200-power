@@ -1,0 +1,601 @@
+<html>
+<head>
+<title> CS2200 Spring 2011 Homework 1 </title>
+</head>
+
+<body bgcolor=white lang=EN-US link=blue >
+
+
+  <p><img src="http://www.cc.gatech.edu/classes/AY2007/cs2200_fall/tinylogo.jpg"
+  align=left /></p>
+  <h1>CS2200 Intro to Systems and Networks<br />
+  Homework 1<br />
+  Spring 2011</h1>
+
+<p>This assignment serves as an introduction to the 16-bit
+LC-2200 processor assembly language. There are two problems: </p>
+
+<ol start=1>
+ <li><a href="#problem1">Intro to LC-2200 assembly</a> </li>
+ <li><a href="#problem2">Assembly programming: The Power Function</a> </li>
+</ol>
+
+<hr size=2 width="100%" align=center>
+
+<h2><a name=problem1>Problem 1:</a> Assembly Programming Warmup</h2>
+
+<p>This problem introduces the 16-bit LC-2200 assembly language
+and has you hand- and machine-assemble a few instructions. </p>
+
+<h3>The LC-2200 Instruction-Set Architecture </h3>
+
+<p><img border=0 src="lc2200-16datapath.jpg" /></p>
+
+<p><b>Figure 1: The LC-2200-16 Datapath (Conceptual)</b> </p>
+
+<p>The LC-2200-16 (Little Computer 2200-16 bits) is very simple, but it is
+general enough to solve complex problems. This section describes the
+instruction set and instruction format of the LC-2200. The LC-2200 is a
+16-register, 16-bit computer. All addresses are word (2 bytes)-addresses. </p>
+
+<p>Although the 16 registers are known as general
+purpose registers, they are generally assigned special duties by software convention. </p>
+
+<table border=1>
+ <tr>
+  <td>
+  <p align=center><b>Reg#</b></p>
+  </td>
+  <td>
+  <p align=center><b>Name</b></p>
+  </td>
+  <td>
+  <p align=center><b>Use</b></p>
+  </td>
+  <td>
+  <p align=center><b>Callee Save?</b></p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>0 </p>
+  </td>
+  <td>
+  <p>$zero </p>
+  </td>
+  <td>
+  <p>always zero (by hardware) </p>
+  </td>
+  <td>
+  <p>n.a. </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>1 </p>
+  </td>
+  <td>
+  <p>$at </p>
+  </td>
+  <td>
+  <p>reserved for assembler </p>
+  </td>
+  <td>
+  <p>n.a. </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>2 </p>
+  </td>
+  <td>
+  <p>$v0 </p>
+  </td>
+  <td>
+  <p>return value </p>
+  </td>
+  <td>
+  <p>no </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>3 </p>
+  </td>
+  <td>
+  <p>$a0 </p>
+  </td>
+  <td>
+  <p>argument </p>
+  </td>
+  <td>
+  <p>no </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>4 </p>
+  </td>
+  <td>
+  <p>$a1 </p>
+  </td>
+  <td>
+  <p>argument </p>
+  </td>
+  <td>
+  <p>no </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>5 </p>
+  </td>
+  <td>
+  <p>$a2 </p>
+  </td>
+  <td>
+  <p>argument </p>
+  </td>
+  <td>
+  <p>no </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>6 </p>
+  </td>
+  <td>
+  <p>$t0 </p>
+  </td>
+  <td>
+  <p>temporary </p>
+  </td>
+  <td>
+  <p>no </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>7 </p>
+  </td>
+  <td>
+  <p>$t1 </p>
+  </td>
+  <td>
+  <p>temporary </p>
+  </td>
+  <td>
+  <p>no </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>8 </p>
+  </td>
+  <td>
+  <p>$t2 </p>
+  </td>
+  <td>
+  <p>temporary </p>
+  </td>
+  <td>
+  <p>no </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>9 </p>
+  </td>
+  <td>
+  <p>$s0 </p>
+  </td>
+  <td>
+  <p>saved register </p>
+  </td>
+  <td>
+  <p>YES </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>10</p>
+  </td>
+  <td>
+  <p>$s1 </p>
+  </td>
+  <td>
+  <p>saved register </p>
+  </td>
+  <td>
+  <p>YES </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>11</p>
+  </td>
+  <td>
+  <p>$s2 </p>
+  </td>
+  <td>
+  <p>saved register </p>
+  </td>
+  <td>
+  <p>YES </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>12</p>
+  </td>
+  <td>
+  <p>$k0 </p>
+  </td>
+  <td>
+  <p>reserved for OS/traps </p>
+  </td>
+  <td>
+  <p>n.a. </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>13</p>
+  </td>
+  <td>
+  <p>$sp </p>
+  </td>
+  <td>
+  <p>stack pointer </p>
+  </td>
+  <td>
+  <p>No </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>14</p>
+  </td>
+  <td>
+  <p>$fp </p>
+  </td>
+  <td>
+  <p>frame pointer </p>
+  </td>
+  <td>
+  <p>YES </p>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <p>15</p>
+  </td>
+  <td>
+  <p>$ra </p>
+  </td>
+  <td>
+  <p>return address </p>
+  </td>
+  <td>
+  <p>No </p>
+  </td>
+ </tr>
+</table>
+
+<p>Register 0: This register will always contain zero when read from. As an
+additional feature it may be written to in those cases where a value is not
+needed. </p>
+
+<p>Registers 1: Although this is a general purpose register by convention, programmers
+should not use it. It may be used by the assembler when processing
+pseudo-instructions. </p>
+
+<p>Register 2: Is designated as the register used to return values from
+functions. </p>
+
+<p>Registers 3-5: Are designated to be used for passing arguments to functions.
+</p>
+
+<p>Registers 6-8: Are designated for temporary variables. </p>
+
+<blockquote>
+<p>Note: When calling a function the programmer should assume
+that the contents of registers 2-8 that were present when the call was made
+will no longer be valid. Thus, if needed after the call those values should be
+saved by the programmer calling the function. </p>
+
+</blockquote>
+
+<p>Registers 9-11: These are saved registers. The caller of a function may
+assume that once the function returns the values that were in these registers
+before the call will still be there. </p>
+
+<blockquote>
+
+<p>Note: This implies that a programmer writing a function that
+wishes to use these registers should first save them (most likely on the
+activation stack), then use them and then restore them before returning control
+to the caller </p>
+
+</blockquote>
+
+<p>Register 12: This register is reserved for handling interrupts. </p>
+
+<p>Register 13: The stack pointer which is used to keep track of the location
+of the top of the activation stack. </p>
+
+<p>Register 14: You do not have to worry about this register. </p>
+
+<p>Register 15: When a function is called the JALR instruction will save the
+address to return to and by convention this register is used for that purpose. </p>
+
+<h4>Instructions </h4>
+
+<p><em>Instructions are 16 bits wide and require two sequential
+fetches from memory.</em> There are 5 instruction formats (bit 0 is the least-
+significant bit). </p>
+
+<pre>    R-type instructions (add, nand):
+
+        bits 15-13: opcode
+
+        bits 12- 9: RX
+
+        bits  8- 5: RY
+
+        bits  4- 1: RZ
+
+        bit 0       unused
+
+
+
+    I-type instructions (addi, lw, sw, beq):
+
+        bits 15-13: opcode
+
+        bits 12- 9: RX
+
+        bits  8- 5: RY
+
+        bits  4- 0: offsetField (a 5-bit, 2's complement number with
+
+                                 a range of -16 to +15)
+
+
+
+    J-type instructions (jalr):
+
+        bits 15-13: opcode
+
+        bits 12- 9: RX
+
+        bits  8- 5: RY
+
+        bits  4- 0: unused (should all be 0)
+
+
+
+    S-type instructions (spop):
+
+        bits 15-13: opcode
+
+        bits 12- 2: unused (should all be 0)
+
+        bits  1- 0: control code</pre>
+
+<p>Symbolic instructions should follow the same layout. For example, the add instructions
+is written in assembly as: <br />
+<code>add &lt;RX&gt;&lt;RY&gt;&lt;RZ&gt;</code></p>
+
+<pre>
+    ------------------------------------------------------------------
+
+    Table 1: Description of Machine Instructions
+
+    ------------------------------------------------------------------
+
+    Assembly language       Opcode (binary     Action
+
+    name for instruction    (bits 15-13)
+
+    ------------------------------------------------------------------
+
+    add (R-type format)     000             Add contents of RY with
+
+     ex: add $v0, $a0, $a1                  contents of RZ, store
+
+                                            results in RX.
+
+
+
+    nand (R-type format)    001             Nand contents of RY with
+
+     ex: nand $v0, $a0, $a1                 contents of RZ, store
+
+                                            results in RX.
+
+
+
+    addi (I-type format)    010             Add contents of RY to
+
+     ex: addi $v0, $a0, 25                  contents of offsetField
+
+                                            and store result in RX.
+
+
+
+    lw (I-type format)      011             Load RX from memory.
+
+     ex: lw $v0, 0x42($sp)                  Memory address is formed
+
+                                            by adding offsetField with
+
+                                            the contents of RY.
+
+
+
+    sw (I-type format)      100             Store RX into memory.
+
+     ex: sw $a0, 0x42($sp)                  Memory address is formed
+
+                                            by adding offsetField with
+
+                                            the contents of RY.
+
+
+
+    beq (I-type format)     101             Compare the contents of RX
+
+     ex: beq $a0, $a1, done                 and RY; if they are the
+
+                                            same, then branch to the
+
+                                            address PC+1+offsetField,
+
+                                            where PC is the address of
+
+                                            the beq instruction. Keep in
+
+                                            mind that memory is word-
+
+                                            addressed.
+
+
+
+    jalr (J-type format)    110             First store PC+2 into RY,
+
+     ex: jalr $at, $ra                      where PC is the address of
+
+                                            the jalr instruction.
+
+                                            Then branch to the address
+
+                                            now contained in RX. Note
+
+                                            that if RX is the same as
+
+                                            RY, the processor will
+
+                                            first store PC+2 into that
+
+                                            register, then end up
+
+                                            branching to PC+2.
+
+
+
+    spop (S-type format)    111             Perform the action as
+
+     ex: spop 0                             determined by the control
+
+                                            code (last 2 bits) cc=0
+
+                                            Halt processor
+</pre>
+
+<p>Like many processors, an assembler for the LC-2200-16 would supply a number of pseudo-instructions and directives: </p>
+
+<pre>
+    halt                                    Simply emits a spop 0
+    ex: halt                                i.e. halt the processor
+
+    la                                      Load the address of a label 
+    ex: la $a0 somelabel                    into a register
+
+    noop                                    No operation: does nothing
+    ex: noop                                (actually emits
+                                            "add $zero, $zero, $zero")
+
+    .word (pseudo-op)                       fill that address with
+     ex: .word  32                          a given value or label address
+     ex: .word  somelabel
+
+</pre>
+
+<p>If a label is used in a beq instruction, it will
+evaluate to the PC-relative offset in terms of words. </p>
+
+<p><br />
+<strong>A.</strong> <em>[0 points]</em> Play around with the simulator. Try
+writing some simple programs to copy numbers from one register to another, to
+load and store values in memory, and to get used to the syntax for the
+assembler. To use the simulator, extract the tarball, cd into the created
+directory, and run "./config.sh". This is a config script that will set up
+a Makefile based on your system. If you want to install it, give it paths
+for installation; otherwise, just press enter at all the prompts to NOT
+install it and just create the executables in that directory. Then run
+make to actually build the executables. If you have the Qt libraries installed,
+you will get a graphical simulator in addition to the standard text simulator.
+The simulator comes with a help option to let you explore its options.</p>
+
+<hr size=2 width="100%" align=center>
+
+<h2><a name=problem2>Problem 2:</a> Power Test Program</h2>
+
+<p>This
+problem has you use the LC-2200 assembly language to write a simple program.<br />
+<br />
+<strong>A.</strong> <em>[30 points]</em> Define a procedure calling convention
+for the LC-2200 assembly language and machine model. The answer should be in
+the form of a written specification in enough detail so that one person could
+write a procedure (or a procedure call) to be used as part of another person's
+program. Use the standard convention as described in class.
+Be sure to explicitly address the standard issues:</p>
+
+<ol start=1 type=1>
+ <li><em>[10 points]</em> Define how the registers are used </li>
+ <ul type=circle>
+  <li>i.e. Which are for what? </li>
+  <li>Whether the registers are caller or callee saved?</li>
+ </ul>
+ <li><em>[10 points]</em> Define how the stack is accessed </li>
+ <ul type=circle>
+  <li>i.e. What does stack pointer point to? </li>
+  <li>Which way does stack grow (in terms of memory address)? </li>
+ </ul>
+ <li><em>[10 points]</em> Define the mechanics of the call, including: </li>
+ <ul type=circle>
+  <li>What the caller does to initiate a procedure call, </li>
+  <li>What the callee does at the beginning of a procedure, </li>
+  <li>What the callee does at the end of a procedure to return to the caller and </li>
+  <li>What the caller does to clean up after the return from a procedure. </li>
+ </ul>
+</ol>
+
+<p><br />
+<strong>B.</strong> <em>[70 points]</em> Write a function in LC-2200 assembly
+language to compute pow(n, m), that is, n raised to the mth power.
+(For Example, pow(2, 4) should return 16.</p>
+
+<p>Your function should follow the calling convention that you have outlined above. </p>
+
+<p><b>YOUR FUNCTION MUST BE RECURSIVE!</b></p>
+
+<p>Iterative solutions to this problem will not receive credit!</p>
+
+<p>You must implement recursion using the stack and stack pointer in order to receive
+full credit.</p>
+
+<p>If you have questions about how to do this, please post to the newsgroup or ask in
+help session. </p>
+
+<p>Make sure that pow.s is in unix-format
+and not in Dos/Windows format. Otherwise, you will not be able to assemble it! </p>
+
+<hr size=2 width="100%" align=center>
+
+<h2>Turnin</h2>
+<p>Turn <b>ALL</b> of your files into T-Square in a .zip or .tar.gz file:</p>
+<ul>
+<li>'answers.txt' containing your answers to the first question</li>
+<li>'pow.s', containing your assembly code.</li>
+</ul>
+The TAs should be able to type 'make', './assemble pow.s' './sim pow.lc' and get your answer.
+If you can't do this with your submission, you have left something out! You should just re-archive the folder this assignment came in and turn that in.</p>
+
+
+<hr size=2 width="100%" align=center>
+
+<p><em>End of CS2200 Spring 2011 Homework 1 </em></p>
+</body>
+</html>

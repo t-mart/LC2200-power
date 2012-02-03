@@ -1,0 +1,42 @@
+Answers.txt
+
+By Tim Martin
+
+I tried to simplify this section of the homework. You will find the answers to
+the rest of this homework's questions by referring to the steps below. I made
+sure to include each questions content somehow.
+
+Calling Convention
+1. CALLER saves t registers
+2. CALLER saves parameters onto stack
+3. CALLER allocates for return value
+4. CALLER saves previous return address
+5. CALLER jumps to routine
+----> in routine
+6. CALLEE saves previous frame pointer, sets new one
+7. CALLEE saves s registers
+8. CALLEE allocates for locals
+----> before execution
+9. CALLEE executes routine
+----> after execution
+10.CALLEE pops locals
+11.CALLEE restores s registers
+12.CALLEE restores previous frame pointer
+13.CALLEE jumps back to caller ($ra)
+----> back to caller
+15.CALLEE restores previous return address
+16.CALLER pops return values (and uses as desired)
+17.CALLER pops parameters
+18.CALLER restores t registers
+
+For each step, the stack points to the data corresponding to that step.
+For example, before step 1, the stack may point to 0xF000. Since there are 3
+t-registers, we must accomodate for them by decrementing by 3 locations. This
+would have the stack pointing to 0xEFFD.
+
+Notice that I decremented by 3 locations, and not incremented. This choice is
+arbitrary, but in my system, I have chosen it for specific reasons:
+-I chose a high memory address for my stack
+-In order to take advantage of this space, I have the stack growing down
+(->0x000)
+-This maximizes the available stack space to a reasonable amount.
